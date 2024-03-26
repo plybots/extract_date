@@ -1,6 +1,17 @@
 import json
 import pandas as pd
 import os
+from dateutil import parser
+import pytz
+
+def convert_date_format(date_string: str):
+    try:
+        date_object = parser.parse(date_string)
+        converted_date = date_object.astimezone(pytz.timezone('Africa/Kampala')).strftime("%Y-%m-%dT%H:%M:%S.%f")
+        converted_date = converted_date[:23] + converted_date[26:] + '+03:00' # Modify here to get the format with 3 decimal places
+        return converted_date
+    except ValueError:
+        return date_string  # If date is not recognizable return as is.
 
 def main():
     project_dir = os.getcwd() # Get the project directory
@@ -25,7 +36,7 @@ def main():
                     counter_matched_rows += 1
                     date = data_values[0].get('value')
                     if date:
-                        dates.append(date)
+                        dates.append(convert_date_format(date))
                     else:
                         dates.append("")
                 else:
